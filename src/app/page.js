@@ -16,22 +16,25 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false); // Track search initiation
   const { results, error: apiError, loading, search } = useSearch();
 
-  const debouncedHandleSearch = useCallback(() => {
-    setLocalError("");
-    setHasSearched(true); // Mark search as initiated
-    if (!name.trim()) {
-      setLocalError("Please enter a name to search");
-      return;
-    }
-    const selectedSites = sites
-      .filter((site) => site.selected)
-      .map((site) => site.domain);
-    if (selectedSites.length === 0) {
-      setLocalError("Please select at least one site");
-      return;
-    }
-    search(name, selectedSites);
-  }, [name, sites, search, setLocalError, setHasSearched]); // Added exhaustive dependencies
+  const debouncedHandleSearch = useCallback(
+    debounce(() => {
+      setLocalError("");
+      setHasSearched(true); // Mark search as initiated
+      if (!name.trim()) {
+        setLocalError("Please enter a name to search");
+        return;
+      }
+      const selectedSites = sites
+        .filter((site) => site.selected)
+        .map((site) => site.domain);
+      if (selectedSites.length === 0) {
+        setLocalError("Please select at least one site");
+        return;
+      }
+      search(name, selectedSites);
+    }, 300),
+    [name, sites, search]
+  );
 
   useEffect(() => {
     return () => debouncedHandleSearch.cancel(); // Cleanup debounce
@@ -112,7 +115,9 @@ export default function Home() {
         !localError &&
         !apiError ? (
         <p className="mt-6 text-gray-600">
-          No results found for &quot;{name}&quot;
+          No results found for {'"'}
+          {name}
+          {'"'}
         </p>
       ) : null}
     </div>
