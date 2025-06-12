@@ -3,6 +3,7 @@ import { allowedSites } from "@/utils/sites";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const name = searchParams.get("name");
+  const location = searchParams.get("location");
 
   let sites = allowedSites;
   const sitesParam = searchParams.get("sites");
@@ -16,8 +17,10 @@ export async function GET(req) {
 
   try {
     const searchPromises = sites.map(async (site) => {
-      // Revert to the initial query format: site:${site} ${name}
-      const query = `site:${site} ${name}`;
+      // Ajoute la localisation à la requête si elle est spécifiée
+      const query = location
+        ? `site:${site} ${name} near:${location}`
+        : `site:${site} ${name}`;
       const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(
         query
       )}`;

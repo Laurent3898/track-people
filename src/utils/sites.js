@@ -1,6 +1,6 @@
 const defaultSites = [
   "linkedin.com",
-  "twitter.com",
+  "x.com",
   "youtube.com",
   "facebook.com",
   "instagram.com",

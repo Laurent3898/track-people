@@ -11,7 +11,7 @@ import {
 
 const siteIcons = {
   "linkedin.com": FaLinkedin,
-  "twitter.com": FaTwitter,
+  "x.com": FaTwitter,
   "youtube.com": FaYoutube,
   "facebook.com": FaFacebook,
   "instagram.com": FaInstagram,
