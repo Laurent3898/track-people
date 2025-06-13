@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import debounce from "lodash.debounce";
 import SiteSelector from "@/components/SiteSelector";
 import useSearch from "@/hooks/useSearch";
@@ -26,6 +26,7 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const { results, error: apiError, loading, search } = useSearch();
   const { t, i18n } = useTranslation();
+  const [mounted, setMounted] = useState(false);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -72,8 +73,8 @@ export default function Home() {
     }
   }, []);
 
-  const debouncedHandleSearch = useCallback(
-    debounce(() => {
+  const debouncedHandleSearch = useMemo(() => {
+    return debounce(() => {
       setLocalError("");
       setHasSearched(true);
       if (!name.trim()) {
@@ -88,21 +89,26 @@ export default function Home() {
         return;
       }
       search(name, selectedSites, location);
-    }, 300),
-    [name, location, sites, search, t]
-  );
+    }, 300);
+  }, [name, location, sites, search, t]);
 
   useEffect(() => {
     return () => debouncedHandleSearch.cancel();
   }, [debouncedHandleSearch]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const resultCounts = results.reduce((acc, result) => {
     acc[result.site] = (acc[result.site] || 0) + 1;
     return acc;
   }, {});
 
-  if (!sites) {
-    return <p>{t("loading")}</p>;
+  const ready = mounted && i18n.isInitialized && sites;
+
+  if (!ready) {
+    return <p>Loading...</p>;
   }
 
   return (
@@ -199,7 +205,7 @@ export default function Home() {
         !localError &&
         !apiError ? (
         <p className="mt-6 text-gray-600" aria-live="polite">
-          {t("noResults")} "{name}"
+          {`${t("noResults")} "${name}"`}
         </p>
       ) : null}
     </div>
