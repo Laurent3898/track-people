@@ -122,8 +122,8 @@ export default function Home() {
             aria-label={t("selectLanguage")}
             className="border p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 text-gray-700 bg-white"
           >
-            <option value="en">English 🌐</option>
             <option value="fr">Français 🌐</option>
+            <option value="en">English 🌐</option>
           </select>
         </div>
       </div>
